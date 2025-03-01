@@ -1,0 +1,608 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    transition: background-color 0.5s ease;
+    overscroll-behavior: none; /* 防止页面弹性滚动 */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #ff6b9d;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* 主内容区布局 */
+.main-content {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* 左侧色卡面板 */
+.color-panel {
+    flex: 0 0 200px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.color-panel h3 {
+    margin-bottom: 15px;
+    color: #ff6b9d;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.color-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+}
+
+.color-btn.active {
+    border-color: #ff6b9d;
+    transform: scale(1.1);
+}
+
+/* 中间相机预览区 */
+.light-frame {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.camera-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* 保持1:1比例 */
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+#cameraPreview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* 镜像显示 */
+    z-index: 1;
+}
+
+.frame-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.filter-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+    mix-blend-mode: screen; /* 改变混合模式以增强效果 */
+}
+
+/* 右侧控制面板 */
+.control-panel {
+    flex: 0 0 250px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.control-section {
+    margin-bottom: 15px;
+}
+
+.control-section h3 {
+    margin-bottom: 10px;
+    color: #ff6b9d;
+    font-size: 1.1rem;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slider {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ff6b9d;
+    cursor: pointer;
+}
+
+.custom-color-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#colorPicker {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#addCustomColor {
+    flex: 1;
+    padding: 8px;
+    background-color: #ff6b9d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+#addCustomColor:hover {
+    background-color: #ff4785;
+}
+
+.filter-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.filter-btn {
+    padding: 8px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.filter-btn.active {
+    background-color: #ff6b9d;
+    color: white;
+    border-color: #ff6b9d;
+}
+
+/* 使用说明区域 */
+.instructions {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.instructions h2 {
+    color: #ff6b9d;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.instructions ol {
+    padding-left: 20px;
+}
+
+.instructions li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .color-panel {
+        flex: none;
+        width: 100%;
+    }
+    
+    .color-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .control-panel {
+        flex: none;
+        width: 100%;
+    }
+    
+    .filter-options {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .color-panel {
+        flex: none;
+        width: 100%;
+        padding: 15px;
+    }
+    
+    .control-panel {
+        flex: none;
+        width: 100%;
+        padding: 15px;
+    }
+    
+    .light-frame {
+        padding: 15px;
+    }
+    
+    .capture-btn {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .capture-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* 确保控制面板适合触摸操作 */
+    .slider::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .position-btn, .filter-btn {
+        padding: 10px 5px;
+        font-size: 0.95rem;
+    }
+    
+    /* 优化移动端控制按钮间距 */
+    .control-section {
+        margin-bottom: 20px;
+    }
+    
+    /* 折叠部分控制面板选项 */
+    .collapsible-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px 0;
+    }
+    
+    .collapsible-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .collapsible-content.active {
+        max-height: 500px;
+    }
+    
+    .toggle-icon {
+        font-size: 1.2rem;
+        transition: transform 0.3s;
+    }
+    
+    .toggle-icon.active {
+        transform: rotate(180deg);
+    }
+}
+
+@media (max-width: 480px) {
+    .color-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .camera-container {
+        padding-bottom: 100%; /* 保持1:1比例 */
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    header p {
+        font-size: 1rem;
+    }
+    
+    .instructions {
+        padding: 15px;
+    }
+    
+    .instructions h2 {
+        font-size: 1.5rem;
+    }
+    
+    .watermark {
+        font-size: 0.8rem;
+        top: 10px;
+        right: 10px;
+        padding: 3px 8px;
+    }
+}
+
+/* 拍照控制按钮 */
+.photo-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+
+.capture-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 3px solid #ff6b9d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.capture-btn:hover {
+    background-color: #ff6b9d;
+}
+
+.capture-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ff6b9d;
+    background-color: #fff;
+}
+
+.capture-btn:hover .capture-icon {
+    background-color: #ff6b9d;
+    border-color: #fff;
+}
+
+/* 倒计时遮罩 */
+.countdown-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 6rem;
+    font-weight: bold;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 0.3s;
+}
+
+/* 照片预览区域 */
+.photo-preview {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.preview-header h3 {
+    margin: 0;
+    color: #ff6b9d;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.preview-actions button {
+    padding: 8px 15px;
+    background-color: #ff6b9d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.preview-actions button:hover {
+    background-color: #ff4785;
+}
+
+#retakeBtn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+#retakeBtn:hover {
+    background-color: #e0e0e0;
+}
+
+.preview-image-container {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+#previewImage {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 美颜控制样式 */
+.beauty-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 位置控制按钮 */
+.position-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+.position-btn {
+    padding: 8px 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.position-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.position-btn.active {
+    background-color: #ff6b9d;
+    color: white;
+    border-color: #ff6b9d;
+}
+
+/* 处理横屏模式 */
+@media (max-height: 500px) and (orientation: landscape) {
+    .main-content {
+        flex-direction: row;
+    }
+    
+    .color-panel {
+        flex: 0 0 150px;
+    }
+    
+    .control-panel {
+        flex: 0 0 200px;
+    }
+    
+    .light-frame {
+        flex: 1;
+    }
+}
+
+/* 水印样式 */
+.watermark {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    padding: 5px 10px;
+    background-color: rgba(255, 107, 157, 0.2);
+    color: #ff6b9d;
+    font-size: 0.9rem;
+    font-style: italic;
+    border-radius: 20px;
+    z-index: 1000;
+    pointer-events: none;
+    user-select: none;
+    backdrop-filter: blur(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s;
+} 
